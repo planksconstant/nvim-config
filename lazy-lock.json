@@ -1,0 +1,33 @@
+{
+  "cp_template": {
+    "prefix": "cfbp",
+    "body": [
+      "#include <bits/stdc++.h>",
+      "using namespace std;",
+      "",
+      "/**",
+      " * author: <your-cf-handle>",
+      " */",
+      "",
+      "#define int long long",
+     
+      "",
+      "void solve() {",
+      "    $0",
+      "}",
+      "",
+      "int32_t main() {",
+      "    ios_base::sync_with_stdio(false);",
+      "    cin.tie(NULL);",
+      "",
+      "    int t ;cin>>t;",
+           "    while(t--) {",
+      "        solve();",
+      "    }",
+      "    return 0;",
+      "}"
+    ],
+    "description": "Standard CP Template"
+  }
+}
+

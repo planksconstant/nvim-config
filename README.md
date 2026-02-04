@@ -7,8 +7,7 @@ crate a file cpp.json for the boiler plate templates
 and paste my code 
 
 Imagine using a mouse (Subtle Vim flex)
-
-
+```text
  ________ ++      _______
                                        /VVVVVVVV\+++++  /VVVVVVV\
                                        \VVVVVVVV/+++++++\VVVVVVV/

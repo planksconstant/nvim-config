@@ -191,9 +191,70 @@ require("lazy").setup({
 			require("nvim-autopairs").setup({})
 		end,
 	},
+	{ -- File Explorer (NEW PLUGIN)
+		"nvim-tree/nvim-tree.lua",
+		version = "*",
+		lazy = false,
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
+		config = function()
+			require("nvim-tree").setup({})
+		end,
+	},
 })
 -- Compile and Run C++ with 3-window layout (Press F5)
+--
+-- Auto-enter Insert Mode when terminal opens
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("custom-term-open", { clear = true }),
+	callback = function()
+		vim.cmd("startinsert")
+	end,
+})
+
+-- Easier window navigation (Use Ctrl + h/j/k/l)
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move focus to the upper window" })
+
 vim.keymap.set("n", "<F5>", function()
+	vim.cmd("write")
+	local file = vim.fn.expand("%:p")
+	local out = vim.fn.expand("%:p:r")
+	local ft = vim.bo.filetype
+
+	local run_cmd = ""
+	if ft == "cpp" then
+		run_cmd = string.format("g++ -O2 -std=c++17 %s -o %s && %s", file, out, out)
+	elseif ft == "c" then
+		run_cmd = string.format("gcc -O2 %s -o %s && %s", file, out, out)
+	elseif ft == "python" then
+		run_cmd = string.format("python3 %s", file)
+	elseif ft == "javascript" then
+		run_cmd = string.format("node %s", file)
+	else
+		print("Language not supported for F5: " .. ft)
+		return
+	end
+
+	-- Cleanup old terminals
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.bo[buf].buftype == "terminal" then
+			vim.api.nvim_buf_delete(buf, { force = true })
+		end
+	end
+
+	vim.cmd("botright 10split | term " .. run_cmd)
+end, { desc = "Native Run (Interactive)" })
+
+vim.keymap.set("n", "<F6>", function()
+	-- Safety check: Only run if it's C++
+	if vim.bo.filetype ~= "cpp" then
+		print("F6 is for C++ only! Use F5 for this file.")
+		return
+	end
 	vim.cmd("write")
 	local file = vim.fn.expand("%:p")
 	local out = vim.fn.expand("%:p:r")
@@ -223,3 +284,4 @@ vim.keymap.set("n", "<F5>", function()
 	local cmd = string.format("botright 10split | term g++ -std=c++17 %s -o %s && %s < %s", file, out, out, input_file)
 	vim.cmd(cmd)
 end, { desc = "Ultimate CP Layout" })
+vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle [E]xplorer" })
